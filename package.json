@@ -10,6 +10,9 @@
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
     "report": "playwright show-report test-results/html-report",
+    "test:default": "npx playwright test",
+    "test:qa": "TEST_ENV=qa npx playwright test",
+    "test:uat": "TEST_ENV=uat npx playwright test",
     "clean": "rm -rf test-results"
   },
   "keywords": [
@@ -25,6 +28,8 @@
     "@playwright/test": "^1.40.0",
     "@types/node": "^20.10.0",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }
-

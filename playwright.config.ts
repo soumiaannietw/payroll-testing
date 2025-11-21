@@ -6,6 +6,7 @@
  */
 
 import { defineConfig, devices } from '@playwright/test';
+import { testConfig } from './src/config/test-config';
 
 /**
  * Playwright Test Configuration
@@ -20,54 +21,54 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   // Directory where test files are located
   testDir: './tests',
-  
+
   // Run tests in files in parallel
   fullyParallel: true,
-  
+
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env.CI,
-  
+
   // Retry on CI only
   retries: process.env.CI ? 2 : 0,
-  
+
   // Opt out of parallel tests on CI
   workers: process.env.CI ? 1 : undefined,
-  
+
   // Maximum time one test can run for
   timeout: 30 * 1000,
-  
+
   // Maximum time for each assertion
   expect: {
     timeout: 10 * 1000
   },
-  
+
   // Reporter to use - HTML reporter for detailed test results
   reporter: [
     ['html', { outputFolder: 'test-results/html-report', open: 'never' }],
     ['list'],
     ['json', { outputFile: 'test-results/test-results.json' }]
   ],
-  
+
   // Shared settings for all the projects below
   use: {
-    // Base URL for UI tests (Note: Our tests use testConfig.ui.baseUrl instead)
-    baseURL: process.env.BASE_URL || 'https://the-internet.herokuapp.com',
-    
+    // Base URL for UI tests (from testConfig)
+    baseURL: testConfig.ui.baseUrl,
+
     // Collect trace when retrying the failed test
     trace: 'on-first-retry',
-    
+
     // Screenshot on failure
     screenshot: 'only-on-failure',
-    
+
     // Video on failure
     video: 'retain-on-failure',
-    
+
     // Browser context options
     viewport: { width: 1280, height: 720 },
-    
+
     // Maximum time for actions like click, fill, etc.
     actionTimeout: 10 * 1000,
-    
+
     // Navigation timeout
     navigationTimeout: 30 * 1000,
   },
@@ -76,7 +77,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         // Channel can be 'chrome', 'chrome-beta', 'msedge', etc.
         channel: 'chrome'

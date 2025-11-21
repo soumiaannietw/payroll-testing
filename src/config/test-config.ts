@@ -36,21 +36,30 @@ export interface TestConfig {
  * Test Configuration object
  * Contains all configuration settings for UI and API tests
  */
+import path from 'path';
+import dotenv from 'dotenv';
+
+const ENV = (process.env.TEST_ENV || process.env.NODE_ENV || 'local').toLowerCase();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+if (ENV !== 'local') {
+  dotenv.config({ path: path.resolve(__dirname, `.env.${ENV}`) });
+}
+
 export const testConfig: TestConfig = {
   // UI Application Configuration
   ui: {
-    baseUrl: process.env.UI_BASE_URL || 'https://the-internet.herokuapp.com',
+    baseUrl: process.env.UI_BASE_URL || 'https://the-internet.herokuapp.coms',
     username: process.env.UI_USERNAME || 'tomsmith',
     password: process.env.UI_PASSWORD || 'SuperSecretPassword!'
   },
-  
+
   // API Configuration
   api: {
-    baseUrl: process.env.API_BASE_URL || 'https://jsonplaceholder.typicode.com',
-    timeout: parseInt(process.env.API_TIMEOUT || '30000')
+    baseUrl: process.env.API_BASE_URL || 'https://jsonplaceholder.typicode.comx',
+    timeout: parseInt(process.env.API_TIMEOUT || '20000')
   },
-  
+
   // Default timeout for test operations (in milliseconds)
-  defaultTimeout: parseInt(process.env.DEFAULT_TIMEOUT || '30000')
+  defaultTimeout: parseInt(process.env.DEFAULT_TIMEOUT || '20000')
 };
 
