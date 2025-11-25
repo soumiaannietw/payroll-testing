@@ -21,7 +21,7 @@ A comprehensive, scalable test automation framework built with Playwright and Ty
 
 This framework provides a robust foundation for automated testing with:
 - **UI Testing**: The Internet (Herokuapp) - reliable test automation practice site
-- **API Testing**: JSONPlaceholder API endpoints
+- **API Testing**: Payroll System API endpoints (Employee, Pay Groups)
 - **Design Pattern**: Page Object Model (POM)
 - **Reporting**: HTML reports with screenshots and videos
 - **Logging**: Structured logging for better debugging
@@ -91,9 +91,8 @@ payroll-testing/
 ├── src/                          # Source code
 │   ├── api/                      # API client modules
 │   │   ├── base-api.ts          # Base API class with HTTP methods
-│   │   ├── users-api.ts         # Users API endpoints
-│   │   ├── auth-api.ts          # Authentication API endpoints
-│   │   └── resources-api.ts     # Resources API endpoints
+│   │   ├── employee-api.ts      # Employee API endpoints
+│   │   └── pay-group-api.ts     # Pay Group API endpoints
 │   ├── pages/                    # Page Object Models
 │   │   ├── base-page.ts         # Base page class
 │   │   ├── login-page.ts        # Login page
@@ -110,9 +109,8 @@ payroll-testing/
 │   │   ├── dashboard.spec.ts    # Dashboard tests
 │   │   └── navigation.spec.ts   # Navigation tests
 │   └── api/                     # API test cases
-│       ├── users.spec.ts        # Users API tests
-│       ├── authentication.spec.ts # Auth API tests
-│       └── resources.spec.ts    # Resources API tests
+│       ├── employee.spec.ts     # Employee API tests
+│       └── pay-group.spec.ts    # Pay Group API tests
 ├── test-results/                 # Test execution results
 ├── playwright.config.ts          # Playwright configuration
 ├── tsconfig.json                 # TypeScript configuration
@@ -121,6 +119,15 @@ payroll-testing/
 ```
 
 ## ⚙️ Configuration
+
+### Default Configuration
+
+The framework works out-of-the-box with these defaults:
+- ✅ **Payroll API**: `http://localhost:8080/tw-payroll-system/api`
+- ✅ **UI Base URL**: `https://the-internet.herokuapp.com`
+- ✅ **Timeouts**: 20 seconds
+
+**No configuration needed for local development!** Just run `npm test` and you're ready to go.
 
 ### Environment Variables
 
@@ -132,8 +139,9 @@ export UI_BASE_URL="https://the-internet.herokuapp.com"
 export UI_USERNAME="tomsmith"
 export UI_PASSWORD="SuperSecretPassword!"
 
-# API Configuration
-export API_BASE_URL="https://jsonplaceholder.typicode.com"
+# API Configuration (Payroll System)
+# PAYROLL_API_BASE_URL defaults to http://localhost:8080/tw-payroll-system/api if not set
+export PAYROLL_API_BASE_URL="http://localhost:8080/tw-payroll-system/api"
 export API_TIMEOUT="30000"
 
 # General Configuration
@@ -247,11 +255,12 @@ test('My new UI test', async ({ page }) => {
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { UsersAPI } from '../../src/api/users-api';
+import { PayGroupApi } from '../../src/api/pay-group-api';
+import { testConfig } from '../../src/config/test-config';
 
 test('My new API test', async ({ request }) => {
-  const usersAPI = new UsersAPI(request, 'https://api.example.com');
-  const response = await usersAPI.getUsers();
+  const payGroupApi = new PayGroupApi(request, testConfig.api.baseUrl);
+  const response = await payGroupApi.getPayGroups();
   expect(response.status()).toBe(200);
 });
 ```
@@ -326,7 +335,7 @@ This project is licensed under the ISC License.
 
 - Playwright team for the excellent testing framework
 - The Internet (Herokuapp) for providing reliable test automation practice site
-- JSONPlaceholder for providing free, reliable API testing endpoints
+- Payroll System team for the API endpoints
 
 ## 📞 Support
 

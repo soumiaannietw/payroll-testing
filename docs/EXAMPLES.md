@@ -103,45 +103,54 @@ This example shows complete CRUD testing for an API resource.
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { UsersAPI } from '../../src/api/users-api';
+import { EmployeeApi, CreateEmployeeRequest, Employee } from '../../src/api/employee-api';
 import { testConfig } from '../../src/config/test-config';
 
-test.describe('User CRUD Operations', () => {
-  let usersAPI: UsersAPI;
-  let createdUserId: number;
+test.describe('Employee CRUD Operations', () => {
+  let employeeApi: EmployeeApi;
+  let createdEmployeeId: string;
   
   test.beforeEach(async ({ request }) => {
-    usersAPI = new UsersAPI(request, testConfig.api.baseUrl);
+    employeeApi = new EmployeeApi(request, testConfig.api.baseUrl);
   });
   
-  test('1. Create user', async () => {
-    const userData = { name: 'Test User', job: 'Tester' };
-    const response = await usersAPI.createUser(userData);
+  test('1. Create employee', async () => {
+    const employeeData: CreateEmployeeRequest = {
+      employeeId: 'E12345',
+      firstName: 'John',
+      lastName: 'Doe',
+      department: 'Engineering',
+      designation: 'Software Engineer',
+      email: 'john.doe@example.com',
+      payGroupId: 1,
+      joiningDate: '2025-11-25'
+    };
+    const response = await employeeApi.createEmployee(employeeData);
     expect(response.status()).toBe(201);
     
-    const body = await usersAPI.getResponseBody(response);
-    createdUserId = body.id;
+    const employee: Employee = await response.json();
+    createdEmployeeId = employee.employeeId;
   });
   
-  test('2. Read user', async () => {
-    const response = await usersAPI.getUserById(2);
+  test('2. Read employee', async () => {
+    const response = await employeeApi.getEmployee(createdEmployeeId);
     expect(response.status()).toBe(200);
   });
   
-  test('3. Update user', async () => {
-    const updatedData = { name: 'Updated User', job: 'Senior Tester' };
-    const response = await usersAPI.updateUser(2, updatedData);
+  test('3. Update employee', async () => {
+    const updatedData = { firstName: 'Jane', designation: 'Senior Software Engineer' };
+    const response = await employeeApi.updateEmployee(createdEmployeeId, updatedData);
     expect(response.status()).toBe(200);
   });
   
-  test('4. Delete user', async () => {
-    const response = await usersAPI.deleteUser(2);
-    expect(response.status()).toBe(204);
+  test('4. Delete employee', async () => {
+    const response = await employeeApi.deleteEmployee(createdEmployeeId);
+    expect(response.status()).toBe(200);
   });
 });
 ```
 
-**Use Case:** Testing all CRUD operations for a resource
+**Use Case:** Testing all CRUD operations for a payroll employee resource
 
 ### Example 2: Authentication Flow
 
@@ -163,8 +172,8 @@ test.describe('Authentication Flow', () => {
   test('Should complete full auth flow', async () => {
     // 1. Register new user
     const userData = {
-      email: 'eve.holt@reqres.in',
-      password: 'pistol'
+      email: 'test.user@example.com',
+      password: 'SecurePassword123'
     };
     
     const registerResponse = await authAPI.register(userData);
@@ -191,18 +200,20 @@ test.describe('Authentication Flow', () => {
 This example shows how to validate API response structure.
 
 ```typescript
-test('Should validate user response schema', async ({ request }) => {
-  const usersAPI = new UsersAPI(request, testConfig.api.baseUrl);
-  const response = await usersAPI.getUserById(1);
-  const body = await usersAPI.getResponseBody(response);
+test('Should validate pay group response schema', async ({ request }) => {
+  const payGroupApi = new PayGroupApi(request, testConfig.api.baseUrl);
+  const response = await payGroupApi.getPayGroups();
+  const data: PayGroup[] = await response.json();
   
   // Validate response structure
-  expect(body).toHaveProperty('data');
-  expect(body.data).toHaveProperty('id');
-  expect(body.data).toHaveProperty('email');
-  expect(body.data).toHaveProperty('first_name');
-  expect(body.data).toHaveProperty('last_name');
-  expect(body.data).toHaveProperty('avatar');
+  expect(Array.isArray(data)).toBe(true);
+  data.forEach(pg => {
+    expect(pg).toHaveProperty('payGroupId');
+    expect(pg).toHaveProperty('groupName');
+    expect(pg).toHaveProperty('paymentCycle');
+    expect(pg).toHaveProperty('baseTaxRate');
+    expect(pg).toHaveProperty('benefitRate');
+    expect(pg).toHaveProperty('deductionRate');
   
   // Validate data types
   expect(typeof body.data.id).toBe('number');
@@ -288,26 +299,32 @@ Use response from one API call in another.
 
 ```typescript
 test('Should chain API calls', async ({ request }) => {
-  const usersAPI = new UsersAPI(request, testConfig.api.baseUrl);
+  const employeeApi = new EmployeeApi(request, testConfig.api.baseUrl);
   
-  // Create user
-  const createResponse = await usersAPI.createUser({
-    name: 'Test User',
-    job: 'Developer'
+  // Create employee
+  const createResponse = await employeeApi.createEmployee({
+    employeeId: 'E12345',
+    firstName: 'John',
+    lastName: 'Doe',
+    department: 'Engineering',
+    designation: 'Developer',
+    email: 'john.doe@example.com',
+    payGroupId: 1,
+    joiningDate: '2025-11-25'
   });
-  const createBody = await usersAPI.getResponseBody(createResponse);
-  const userId = createBody.id;
+  const createdEmployee: Employee = await createResponse.json();
+  const employeeId = createdEmployee.employeeId;
   
-  // Update the created user
-  const updateResponse = await usersAPI.updateUser(userId, {
-    name: 'Updated User',
-    job: 'Senior Developer'
+  // Update the created employee
+  const updateResponse = await employeeApi.updateEmployee(employeeId, {
+    firstName: 'Jane',
+    designation: 'Senior Developer'
   });
   expect(updateResponse.status()).toBe(200);
   
-  // Delete the user
-  const deleteResponse = await usersAPI.deleteUser(userId);
-  expect(deleteResponse.status()).toBe(204);
+  // Delete the employee
+  const deleteResponse = await employeeApi.deleteEmployee(employeeId);
+  expect(deleteResponse.status()).toBe(200);
 });
 ```
 
@@ -369,27 +386,27 @@ test('Should handle network errors gracefully', async ({ page }) => {
 
 ```typescript
 test('Should handle parallel API requests', async ({ request }) => {
-  const usersAPI = new UsersAPI(request, testConfig.api.baseUrl);
+  const payGroupApi = new PayGroupApi(request, testConfig.api.baseUrl);
   
   // Make multiple parallel requests
-  const [user1, user2, user3] = await Promise.all([
-    usersAPI.getUserById(1),
-    usersAPI.getUserById(2),
-    usersAPI.getUserById(3),
+  const [weekly, monthly, allGroups] = await Promise.all([
+    payGroupApi.getPayGroups('WEEKLY'),
+    payGroupApi.getPayGroups('MONTHLY'),
+    payGroupApi.getPayGroups(),
   ]);
   
   // Verify all succeeded
-  expect(user1.status()).toBe(200);
-  expect(user2.status()).toBe(200);
-  expect(user3.status()).toBe(200);
+  expect(weekly.status()).toBe(200);
+  expect(monthly.status()).toBe(200);
+  expect(allGroups.status()).toBe(200);
   
-  // Verify unique users
-  const body1 = await usersAPI.getResponseBody(user1);
-  const body2 = await usersAPI.getResponseBody(user2);
-  const body3 = await usersAPI.getResponseBody(user3);
+  // Verify response data
+  const weeklyData: PayGroup[] = await weekly.json();
+  const monthlyData: PayGroup[] = await monthly.json();
+  const allData: PayGroup[] = await allGroups.json();
   
-  expect(body1.data.id).not.toBe(body2.data.id);
-  expect(body2.data.id).not.toBe(body3.data.id);
+  expect(weeklyData.every(pg => pg.paymentCycle === 'WEEKLY')).toBe(true);
+  expect(monthlyData.every(pg => pg.paymentCycle === 'MONTHLY')).toBe(true);
 });
 ```
 

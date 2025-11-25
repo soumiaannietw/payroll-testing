@@ -89,9 +89,8 @@ Similar to POM, API testing follows a client pattern:
 BaseAPI (Abstract)
     ├── HTTP methods (GET, POST, PUT, DELETE, PATCH)
     └── Inherited by all API classes
-         ├── UsersAPI
-         ├── AuthAPI
-         └── ResourcesAPI
+         ├── EmployeeApi
+         └── PayGroupApi
 ```
 
 ### 3. Singleton Pattern
@@ -139,9 +138,8 @@ The Logger utility implements the Singleton pattern:
 
 **Components:**
 - base-api.ts (Base class)
-- users-api.ts
-- auth-api.ts
-- resources-api.ts
+- employee-api.ts
+- pay-group-api.ts
 
 **Responsibilities:**
 - Define API endpoints

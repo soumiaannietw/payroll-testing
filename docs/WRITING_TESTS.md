@@ -26,7 +26,7 @@ Before writing tests, ensure you understand:
 
 - UI Tests: `*.spec.ts` in `tests/ui/` folder
 - API Tests: `*.spec.ts` in `tests/api/` folder
-- Example: `login.spec.ts`, `users.spec.ts`
+- Example: `login.spec.ts`, `employee.spec.ts`, `pay-group.spec.ts`
 
 ## 🖥️ Writing UI Tests
 

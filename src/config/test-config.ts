@@ -4,6 +4,13 @@
  * This file contains all the configuration settings for test execution.
  * It includes URLs, credentials, timeouts, and other environment-specific settings.
  * Values can be overridden using environment variables.
+ * 
+ * Default Values:
+ * - PAYROLL_API_BASE_URL: http://localhost:8080/tw-payroll-system/api
+ * - API_TIMEOUT: 20000ms
+ * - DEFAULT_TIMEOUT: 20000ms
+ * - UI_USERNAME: tomsmith
+ * - UI_PASSWORD: SuperSecretPassword!
  */
 
 /**
@@ -73,8 +80,8 @@ export const testConfig: TestConfig = {
 
   // API Configuration
   api: {
-    // Use PAYROLL_API_BASE_URL for payroll/pay group APIs if set, else fallback to API_BASE_URL
-    baseUrl: getEnv('PAYROLL_API_BASE_URL', getRequired('API_BASE_URL'))!,
+    // Payroll API base URL - defaults to local development server
+    baseUrl: getEnv('PAYROLL_API_BASE_URL', 'http://localhost:8080/tw-payroll-system/api')!,
     timeout: parseInt(getEnv('API_TIMEOUT', '20000')!, 10)
   },
 

@@ -30,6 +30,14 @@ npx playwright --version
 
 You should see the Playwright version number.
 
+### Step 4: Configuration (Optional)
+
+The framework comes with sensible defaults for local development:
+- **Payroll API**: `http://localhost:8080/tw-payroll-system/api`
+- **UI Base URL**: `https://the-internet.herokuapp.com`
+
+No configuration needed to get started! For custom environments, see [README.md](README.md#-configuration).
+
 ## 🏃 Running Tests
 
 ### Run All Tests
@@ -109,12 +117,12 @@ Create `tests/api/my-api-test.spec.ts`:
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { UsersAPI } from '../../src/api/users-api';
+import { EmployeeApi } from '../../src/api/employee-api';
 import { testConfig } from '../../src/config/test-config';
 
 test('My first API test', async ({ request }) => {
-  const usersAPI = new UsersAPI(request, testConfig.api.baseUrl);
-  const response = await usersAPI.getUsers();
+  const employeeApi = new EmployeeApi(request, testConfig.api.baseUrl);
+  const response = await employeeApi.getAllEmployees();
   expect(response.status()).toBe(200);
 });
 ```
@@ -130,11 +138,11 @@ The framework comes with ready-to-run tests:
 - ✅ Secure area display
 - ✅ Logout functionality
 
-### API Tests (JSONPlaceholder)
-- ✅ User CRUD Operations
-- ✅ Authentication (Login/Register)
-- ✅ Resource Management
-- ✅ Error Handling
+### API Tests (Payroll System)
+- ✅ Employee CRUD Operations (Create, Read, Update)
+- ✅ Pay Group Management
+- ✅ Data Validation and Error Handling
+- ✅ Business Rule Validation (unique IDs, emails)
 
 ## 🔧 Common Commands
 

@@ -141,12 +141,13 @@ login-page.ts
 dashboard-page.ts
 
 // API clients: kebab-case
-users-api.ts
-auth-api.ts
+employee-api.ts
+pay-group-api.ts
 
 // Test files: kebab-case with .spec.ts
 login.spec.ts
-users.spec.ts
+employee.spec.ts
+pay-group.spec.ts
 
 // Utilities: kebab-case
 logger.ts
@@ -181,14 +182,14 @@ Always use TypeScript types:
 
 ```typescript
 // Good
-async function getUser(id: number): Promise<User> {
-  const response: APIResponse = await api.get(`/users/${id}`);
+async function getEmployee(id: string): Promise<Employee> {
+  const response: APIResponse = await api.get(`/employee/${id}`);
   return await response.json();
 }
 
 // Bad
-async function getUser(id) {
-  const response = await api.get(`/users/${id}`);
+async function getEmployee(id) {
+  const response = await api.get(`/employee/${id}`);
   return await response.json();
 }
 ```
@@ -203,7 +204,7 @@ import { test, expect } from '@playwright/test';
 
 // 2. Internal modules (pages/api)
 import { LoginPage } from '../../src/pages/login-page';
-import { UsersAPI } from '../../src/api/users-api';
+import { EmployeeApi } from '../../src/api/employee-api';
 
 // 3. Utilities
 import { logger } from '../../src/utils/logger';
